@@ -8,21 +8,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
-      - name: Install dependencies
+          python-version: 3.11
+
+      - name: Install pylint
         run: |
           python -m pip install --upgrade pip
           pip install pylint
-      - name: Analysing the code with pylint
+
+      - name: Run pylint
         run: |
-          pylint *.py --output=lint.txt || true
-      - name: Upload lint results
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: lint.txt
+          pylint $(git ls-files '*.py') || true
